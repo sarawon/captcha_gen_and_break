@@ -13,7 +13,7 @@ from keras.layers import Convolution2D, MaxPooling2D, AveragePooling2D
 from keras.layers import Input, Dense, Flatten, Dropout
 from keras.models import Model
 from keras.utils import np_utils
-from keras.utils.visualize_util import plot
+from keras.utils.vis_utils import plot_model
 
 CLASS_NUM = 10
 
@@ -82,10 +82,10 @@ def get_cnn_net(num, _shape):
 
     flat = Flatten()(drop3)
     y_list = []
-    for i in xrange(num):
+    for i in range(num):
         y_list.append(Dense(CLASS_NUM, activation='softmax')(flat))
     model = Model(input=inputs, output=y_list)
-    plot(model, show_shapes=True, to_file='cnn.png')
+    plot_model(model, show_shapes=True, to_file='cnn.png')
     model.compile(loss='categorical_crossentropy', loss_weights=[1.]
                   * num, optimizer='Adam', metrics=['accuracy'])
     return model
@@ -99,9 +99,9 @@ def evaluate(model, test_datas, test_labels):
     test_size = test_labels[0].shape[0]
     acc_all = 0
     acc_each = [0, 0, 0, 0]
-    for i in xrange(test_size):
+    for i in range(test_size):
         flags = True
-        for j in xrange(num_figure):
+        for j in range(num_figure):
             flag = one_hot_decode(test_labels[j][i]) \
                 == one_hot_decode(predict_labels[j][i])
             if flag:
@@ -110,7 +110,7 @@ def evaluate(model, test_datas, test_labels):
         if flags:
             acc_all = acc_all + 1
 
-    for j in xrange(num_figure):
+    for j in range(num_figure):
         metrics['accs'].append(acc_each[j] * 1. / test_size)
     metrics['acc'] = acc_all * 1. / test_size
     return metrics
@@ -125,7 +125,7 @@ def save_model(model):
 
 
 if __name__ == '__main__':
-    data_path_prefix = '../gen/4'
+    data_path_prefix = 'captcha_gen_and_break/gen/4'
     if data_path_prefix.endswith('/'):
         data_path_prefix = data_path_prefix[:-1]
     train_data_path = data_path_prefix + '_train/'
@@ -142,16 +142,14 @@ if __name__ == '__main__':
     t0 = time.time()
     model.fit(train_datas, train_labels, nb_epoch=nb_epoch)
     t1 = time.time()
-    print 'training time : ', t1 - t0
+    print('training time : ', t1 - t0)
     save_model(model)
 
-    print 'train evaluations:'
+    print('train evaluations:')
     model_metrics = model.evaluate(train_datas, train_labels)
-    print dict(zip(model.metrics_names, model_metrics))
-    print evaluate(model, train_datas, train_labels)
-    print 'test evaluations:'
+    print(dict(zip(model.metrics_names, model_metrics)))
+    print(evaluate(model, train_datas, train_labels))
+    print('test evaluations:')
     model_metrics = model.evaluate(test_datas, test_labels)
-    print dict(zip(model.metrics_names, model_metrics))
-    print evaluate(model, test_datas, test_labels)
-
-            
+    print(dict(zip(model.metrics_names, model_metrics)))
+    print(evaluate(model, test_datas, test_labels))
